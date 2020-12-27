@@ -1,6 +1,7 @@
 <template>
   <div class="warper">
     <el-breadcrumb separator="/">
+      <el-breadcrumb-item :to="{ path: '/allproduct' }">所有产品列表</el-breadcrumb-item>
       <el-breadcrumb-item :to="{ path: '/product' }"
         >产品销量TOP</el-breadcrumb-item
       >
@@ -25,7 +26,7 @@
         v-model="num"
         @change="handleChange"
         :min="1"
-        :max="10"
+        :max="100"
         label="top"
       ></el-input-number>
       <el-button
@@ -44,6 +45,11 @@
       style="width: 100%"
       row-class-name="success-row"
     >
+      <el-table-column label="排名"width="90px">
+        <template slot-scope="scope">
+          {{scope.$index+1}}
+        </template>
+      </el-table-column>
       <el-table-column prop="p_id" label="产品id" width="180">
       </el-table-column>
       <el-table-column prop="p_name" label="产品名" width="180">
@@ -63,24 +69,7 @@ export default {
     return {
       num: 1,
       loading: false,
-      tableData: [
-        {
-          p_id: "dsf8dfgd7ft738h7t3rh",
-          p_name: "林中小屋",
-          p_category: "恐怖电影",
-          cost: 1142,
-          price: 1215,
-          s_vol: 132
-        },
-        {
-          p_id: "dsf8dfgd7ft738h7t3rh",
-          p_name: "林中小屋",
-          p_category: "恐怖电影",
-          cost: 1142,
-          price: 1215,
-          s_vol: 332
-        }
-      ]
+      tableData: []
     };
   },
   methods: {
@@ -90,12 +79,11 @@ export default {
     getData: function() {
       this.$refs.btn.loading = true;
       var self = this;
-      //var data = JSON.stringify({ name: "zhizhizhi", age: 2 });
       this.$axios
         .get("/api/product/top?num=" + this.num)
         .then(successResponse => {
           if (successResponse.status === 200) {
-            self.tableData = successResponse.data;
+            self.tableData = successResponse.data['data'];
             for (var i = 0; i < self.tableData.length; i++) {
               self.tableData[i].price /= 100;
               self.tableData[i].cost /= 100;

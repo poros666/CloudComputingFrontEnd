@@ -1,6 +1,7 @@
 <template>
   <div class="warper">
     <el-breadcrumb separator="/">
+      <el-breadcrumb-item :to="{ path: '/allproduct' }">所有产品列表</el-breadcrumb-item>
       <el-breadcrumb-item :to="{ path: '/product' }">产品销量TOP</el-breadcrumb-item>
       <el-breadcrumb-item :to="{ path: '/total' }">每月销售</el-breadcrumb-item>
       <el-breadcrumb-item :to="{ path: '/profit' }">每月利润</el-breadcrumb-item>
@@ -28,12 +29,17 @@
       style="width: 100%"
       row-class-name='success-row'
     >
-      <el-table-column prop="p_id" label="产品id" width="180"> </el-table-column>
-      <el-table-column prop="p_name" label="产品名" width="180"> </el-table-column>
-      <el-table-column prop="p_category" label="类别"> </el-table-column>
-      <el-table-column prop="cost" label="成本"> </el-table-column>
-      <el-table-column prop="price" label="单价"> </el-table-column>
-      <el-table-column prop="s_vol" label="销量"> </el-table-column>
+      <el-table-column label="序号"width="90px">
+        <template slot-scope="scope">
+          {{scope.$index+1}}
+        </template>
+      </el-table-column>
+      <el-table-column prop="p_id" sortable label="产品id" width="180"> </el-table-column>
+      <el-table-column prop="p_name" sortable label="产品名" width="180"> </el-table-column>
+      <el-table-column prop="p_category" sortable label="类别"> </el-table-column>
+      <el-table-column prop="cost"sortable  label="成本"> </el-table-column>
+      <el-table-column prop="price" sortable label="单价"> </el-table-column>
+      <el-table-column prop="s_vol" sortable label="销量"> </el-table-column>
     </el-table>
   </div>
 </template>
@@ -44,36 +50,18 @@ export default {
   data() {
     return {
       loading: false,
-      tableData: [
-        {
-          p_id: "dsf8dfgd7ft738h7t3rh",
-          p_name: "林中小屋",
-          p_category: "恐怖电影",
-          cost: 1142,
-          price: 1215,
-          s_vol: 132
-        },
-        {
-          p_id: "dsf8dfgd7ft738h7t3rh",
-          p_name: "林中小屋",
-          p_category: "恐怖电影",
-          cost: 1142,
-          price: 1215,
-          s_vol: 332
-        }
-      ]
+      tableData: []
     };
   },
   methods: {
     getData: function() {
       this.$refs.btn.loading = true;
       var self = this;
-      //var data = JSON.stringify({ name: "zhizhizhi", age: 2 });
       this.$axios
         .get("/api/product/categorytop")
         .then(successResponse => {
           if (successResponse.status === 200) {
-            self.tableData = successResponse.data;
+            self.tableData = successResponse.data['data'];
             this.$message({
               message: "成功",
               type: "success"

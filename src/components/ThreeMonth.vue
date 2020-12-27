@@ -1,6 +1,7 @@
 <template>
   <div class="warper">
     <el-breadcrumb separator="/">
+      <el-breadcrumb-item :to="{ path: '/allproduct' }">所有产品列表</el-breadcrumb-item>
       <el-breadcrumb-item :to="{ path: '/product' }"
         >产品销量TOP</el-breadcrumb-item
       >
@@ -18,9 +19,9 @@
       <el-breadcrumb-item></el-breadcrumb-item>
     </el-breadcrumb>
     <div>
-      <h1 class="HT">连续三个月有购买记录的客人</h1>
+      <h1 class="HT">连续三天及以上有购买记录的客人</h1>
       <h5 class="subT">
-        Clients who has purchase records in THREE consecutive months.
+        Clients who has purchase records in THREE consecutive days.
       </h5>
       <el-input-number
         class="input"
@@ -46,12 +47,17 @@
       style="width: 100%"
       row-class-name="success-row"
     >
+      <el-table-column label="序号"width="90px">
+        <template slot-scope="scope">
+          {{scope.$index+1}}
+        </template>
+      </el-table-column>
       <el-table-column prop="c_id" label="用户id" width="180">
       </el-table-column>
       <el-table-column prop="c_name" label="用户昵称" width="180">
       </el-table-column>
       <el-table-column prop="c_sex" label="用户性别"> </el-table-column>
-      <el-table-column prop="data_dt" label="连续购买记录"> </el-table-column>
+      <el-table-column prop="data_dt" label="连续购买记录" > </el-table-column>
     </el-table>
   </div>
 </template>
@@ -92,12 +98,11 @@ export default {
     getData: function() {
       this.$refs.btn.loading = true;
       var self = this;
-      //var data = JSON.stringify({ name: "zhizhizhi", age: 2 });
       this.$axios
-        .get("api/user/threeday?year=" + num)
+        .get("api/user/threeday?year=" + this.num)
         .then(successResponse => {
           if (successResponse.status === 200) {
-            self.tableData = successResponse.data;
+            self.tableData = successResponse.data['data'];
             for (var i = 0; i < self.tableData.length; i++) {
               if (self.tableData[i].c_sex == 0) {
                 self.tableData[i].c_sex = "男";

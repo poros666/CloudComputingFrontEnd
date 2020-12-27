@@ -1,6 +1,7 @@
 <template>
   <div class="warper">
     <el-breadcrumb separator="/">
+      <el-breadcrumb-item :to="{ path: '/allproduct' }">所有产品列表</el-breadcrumb-item>
       <el-breadcrumb-item :to="{ path: '/product' }"
         >产品销量TOP</el-breadcrumb-item
       >
@@ -36,9 +37,14 @@
       style="width: 100%"
       row-class-name="success-row"
     >
-      <el-table-column prop="year" label="年份" width="200"> </el-table-column>
-      <el-table-column prop="month" label="月份" width="200"> </el-table-column>
-      <el-table-column prop="profit" label="利润"> </el-table-column>
+      <el-table-column label="序号"width="90px">
+        <template slot-scope="scope">
+          {{scope.$index+1}}
+        </template>
+      </el-table-column>
+      <el-table-column prop="year" label="年份" sortable width="200"> </el-table-column>
+      <el-table-column prop="month" label="月份" sortable width="200"> </el-table-column>
+      <el-table-column prop="profit" sortable label="利润"> </el-table-column>
     </el-table>
   </div>
 </template>
@@ -49,18 +55,7 @@ export default {
   data() {
     return {
       loading: false,
-      tableData: [
-        {
-          year: 2020,
-          month: 1,
-          profit: 1412412
-        },
-        {
-          year: 2019,
-          month: 11,
-          profit: 125125356
-        }
-      ]
+      tableData: []
     };
   },
   methods: {
@@ -72,7 +67,7 @@ export default {
         .get("/api/profit/monthprofit")
         .then(successResponse => {
           if (successResponse.status === 200) {
-            self.tableData = successResponse.data;
+            self.tableData = successResponse.data['data'];
             for (var i = 0; i < self.tableData.length; i++) {
               self.tableData[i].profit /= 100;
             }
