@@ -13,6 +13,13 @@ Vue.use(ElementUI);
 
 Vue.config.productionTip = false;
 
+
+Vue.directive('title', {
+  inserted: function (el, binding) {
+    document.title = el.dataset.title
+  }
+})
+
 // 引用axios，并设置基础URL为后端服务api地址
 //var axios = require('axios');
 

@@ -1,6 +1,7 @@
 <template>
   <div class="warper">
     <el-breadcrumb separator="/">
+      <el-breadcrumb-item :to="{ path: '/allproduct' }">所有产品列表</el-breadcrumb-item>
       <el-breadcrumb-item :to="{ path: '/product' }"
         >产品销量TOP</el-breadcrumb-item
       >
@@ -36,6 +37,11 @@
       style="width: 100%"
       row-class-name="success-row"
     >
+      <el-table-column label="排名" width="70px">
+        <template slot-scope="scope">
+          {{scope.$index+1}}
+        </template>
+      </el-table-column>
       <el-table-column prop="p_id" label="产品id" width="180">
       </el-table-column>
       <el-table-column prop="p_name" label="产品名" width="180">
@@ -51,6 +57,11 @@
       style="width: 100%"
       row-class-name="women-row"
     >
+      <el-table-column label="排名" width="70px">
+        <template slot-scope="scope">
+          {{scope.$index+1}}
+        </template>
+      </el-table-column>
       <el-table-column prop="p_id" label="产品id" width="180">
       </el-table-column>
       <el-table-column prop="p_name" label="产品名" width="180">
@@ -69,56 +80,41 @@ export default {
   data() {
     return {
       loading: false,
-      tableDataMale: [
-        {
-          p_id: "dsf8dfgd7ft738h7t3rh",
-          p_name: "林中小屋",
-          p_category: "恐怖电影",
-          cost: 1142,
-          price: 1215,
-          s_vol: 132
-        },
-        {
-          p_id: "dsf8dfgd7ft738h7t3rh",
-          p_name: "林中小屋",
-          p_category: "恐怖电影",
-          cost: 1142,
-          price: 1215,
-          s_vol: 332
-        }
-      ],
-      tableDataFemale: [
-        {
-          p_id: "dsf8dfgd7ft738h7t3rh",
-          p_name: "林中小屋",
-          p_category: "恐怖电影",
-          cost: 1142,
-          price: 1215,
-          s_vol: 132
-        },
-        {
-          p_id: "dsf8dfgd7ft738h7t3rh",
-          p_name: "林中小屋",
-          p_category: "恐怖电影",
-          cost: 1142,
-          price: 1215,
-          s_vol: 332
-        }
-      ]
+      tableDataMale: [],
+      tableDataFemale: []
     };
   },
   methods: {
+    indexFn(index) {
+      index = (index + 1) + (this.page - 1) * this.per_page
+      return index
+    },
     getData: function() {
       this.$refs.btn.loading = true;
       var self = this;
-      //var data = JSON.stringify({ name: "zhizhizhi", age: 2 });
       this.$axios
         .get("/api/purchase/genderprefer")
         .then(successResponse => {
           if (successResponse.status === 200) {
-            self.tableDataMale = successResponse.data.male;
-            self.tableDataFemale = successResponse.data.female;
-            for (var i = 0; i < self.tableData.length; i++) {
+            var data = successResponse.data['data'];
+            var maleData = new Array();
+            var femaleData = new Array();
+            for(var j = 0 ; j < data.length ; j++){
+              if (data[j]['c_sex'] == 0)
+              {maleData.push(data[j]);}
+              else{
+                femaleData.push(data[j]);
+              }
+            }
+            var objMale = JSON.parse(JSON.stringify(maleData));
+            var objfeMale = JSON.parse(JSON.stringify(femaleData));
+            for(var k = 0 ; k < 3 ; k++){
+              delete objMale[k]['c_sex'];
+              delete objfeMale[k]['c_sex'];
+            }
+            self.tableDataMale = objMale;
+            self.tableDataFemale = objfeMale;
+            for (var i = 0; i < self.tableDataMale.length; i++) {
               self.tableDataMale[i].cost /= 100;
               self.tableDataMale[i].price /= 100;
               self.tableDataFemale[i].cost /= 100;
